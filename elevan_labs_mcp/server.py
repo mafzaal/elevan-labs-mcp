@@ -6,28 +6,27 @@ This server provides Model Context Protocol (MCP) tools for text-to-speech
 functionality using the ElevenLabs API.
 """
 
-import os
-import json
 import asyncio
+import json
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urlparse
 
 import httpx
+from dotenv import load_dotenv
 from elevenlabs import ElevenLabs
 from mcp.server import Server
 from mcp.types import (
-    Resource,
-    Tool,
-    TextContent,
-    ImageContent,
     EmbeddedResource,
+    ImageContent,
+    Resource,
+    TextContent,
+    Tool,
 )
 from pydantic import BaseModel
-
-from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
@@ -48,17 +47,20 @@ DEFAULT_MODEL_ID = "eleven_multilingual_v2"
 DEFAULT_OUTPUT_FORMAT = "mp3_44100_128"
 DEFAULT_OUTPUT_DIR = "./audio_output"
 
+
 class VoiceSettings(BaseModel):
     """Voice settings configuration."""
+
     stability: Optional[float] = None
     similarity_boost: Optional[float] = None
     style: Optional[float] = None
     use_speaker_boost: Optional[bool] = None
 
+
 def get_elevenlabs_client() -> ElevenLabs:
     """Get or create ElevenLabs client."""
     global elevenlabs_client
-    
+
     if elevenlabs_client is None:
         api_key = os.getenv("ELEVENLABS_API_KEY")
         if not api_key:
@@ -67,8 +69,9 @@ def get_elevenlabs_client() -> ElevenLabs:
                 "Please set it with your ElevenLabs API key."
             )
         elevenlabs_client = ElevenLabs(api_key=api_key)
-    
+
     return elevenlabs_client
+
 
 def ensure_output_directory(output_path: str) -> Path:
     """Ensure output directory exists and return Path object."""
@@ -76,24 +79,28 @@ def ensure_output_directory(output_path: str) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     return path
 
+
 def generate_output_filename(text: str, voice_id: str, output_format: str) -> str:
     """Generate a descriptive filename for the output audio."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     # Clean text for filename (first 30 chars, replace spaces/special chars)
-    clean_text = "".join(c for c in text[:30] if c.isalnum() or c in (' ', '-', '_')).strip()
-    clean_text = clean_text.replace(' ', '_')
-    
+    clean_text = "".join(
+        c for c in text[:30] if c.isalnum() or c in (" ", "-", "_")
+    ).strip()
+    clean_text = clean_text.replace(" ", "_")
+
     # Extract file extension from format
-    if output_format.startswith('mp3'):
-        ext = 'mp3'
-    elif output_format.startswith('wav'):
-        ext = 'wav'
-    elif output_format.startswith('pcm'):
-        ext = 'pcm'
+    if output_format.startswith("mp3"):
+        ext = "mp3"
+    elif output_format.startswith("wav"):
+        ext = "wav"
+    elif output_format.startswith("pcm"):
+        ext = "pcm"
     else:
-        ext = 'mp3'  # default
-    
+        ext = "mp3"  # default
+
     return f"{clean_text}_{voice_id[:8]}_{timestamp}.{ext}"
+
 
 @server.list_tools()
 async def list_tools() -> List[Tool]:
@@ -124,9 +131,17 @@ async def list_tools() -> List[Tool]:
                         "description": f"Audio output format (default: {DEFAULT_OUTPUT_FORMAT})",
                         "default": DEFAULT_OUTPUT_FORMAT,
                         "enum": [
-                            "mp3_44100_128", "mp3_44100_192", "mp3_44100_64",
-                            "pcm_16000", "pcm_22050", "pcm_24000", "pcm_44100",
-                            "ulaw_8000", "wav_22050", "wav_44100", "wav_48000"
+                            "mp3_44100_128",
+                            "mp3_44100_192",
+                            "mp3_44100_64",
+                            "pcm_16000",
+                            "pcm_22050",
+                            "pcm_24000",
+                            "pcm_44100",
+                            "ulaw_8000",
+                            "wav_22050",
+                            "wav_44100",
+                            "wav_48000",
                         ],
                     },
                     "output_file": {
@@ -138,7 +153,11 @@ async def list_tools() -> List[Tool]:
                         "description": "Custom voice settings",
                         "properties": {
                             "stability": {"type": "number", "minimum": 0, "maximum": 1},
-                            "similarity_boost": {"type": "number", "minimum": 0, "maximum": 1},
+                            "similarity_boost": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1,
+                            },
                             "style": {"type": "number", "minimum": 0, "maximum": 1},
                             "use_speaker_boost": {"type": "boolean"},
                         },
@@ -207,6 +226,7 @@ async def list_tools() -> List[Tool]:
         ),
     ]
 
+
 @server.call_tool()
 async def call_tool(name: str, arguments: Dict[str, Any]) -> List[TextContent]:
     """Handle tool calls."""
@@ -227,6 +247,7 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> List[TextContent]:
         logger.error(f"Error in {name}: {str(e)}")
         return [TextContent(type="text", text=f"Error: {str(e)}")]
 
+
 async def handle_text_to_speech(arguments: Dict[str, Any]) -> List[TextContent]:
     """Handle text-to-speech conversion."""
     text = arguments["text"]
@@ -235,21 +256,21 @@ async def handle_text_to_speech(arguments: Dict[str, Any]) -> List[TextContent]:
     output_format = arguments.get("output_format", DEFAULT_OUTPUT_FORMAT)
     output_file = arguments.get("output_file")
     voice_settings_dict = arguments.get("voice_settings")
-    
+
     client = get_elevenlabs_client()
-    
+
     # Generate output file path if not provided
     if not output_file:
         filename = generate_output_filename(text, voice_id, output_format)
         output_file = os.path.join(DEFAULT_OUTPUT_DIR, filename)
-    
+
     output_path = ensure_output_directory(output_file)
-    
+
     # Prepare voice settings
     voice_settings = None
     if voice_settings_dict:
         voice_settings = voice_settings_dict
-    
+
     try:
         # Call ElevenLabs API
         audio_generator = client.text_to_speech.convert(
@@ -259,14 +280,14 @@ async def handle_text_to_speech(arguments: Dict[str, Any]) -> List[TextContent]:
             output_format=output_format,
             voice_settings=voice_settings,
         )
-        
+
         # Save audio to file
         with open(output_path, "wb") as audio_file:
             for chunk in audio_generator:
                 audio_file.write(chunk)
-        
+
         file_size = output_path.stat().st_size
-        
+
         result = {
             "success": True,
             "message": f"Successfully converted text to speech",
@@ -277,22 +298,23 @@ async def handle_text_to_speech(arguments: Dict[str, Any]) -> List[TextContent]:
             "output_format": output_format,
             "text_length": len(text),
         }
-        
+
         return [TextContent(type="text", text=json.dumps(result, indent=2))]
-        
+
     except Exception as e:
         error_msg = f"Failed to convert text to speech: {str(e)}"
         logger.error(error_msg)
         return [TextContent(type="text", text=f"Error: {error_msg}")]
 
+
 async def handle_list_voices(arguments: Dict[str, Any]) -> List[TextContent]:
     """Handle listing available voices."""
     client = get_elevenlabs_client()
-    
+
     try:
         voices_response = client.voices.get_all()
         voices = voices_response.voices
-        
+
         result = {
             "success": True,
             "voice_count": len(voices),
@@ -304,32 +326,47 @@ async def handle_list_voices(arguments: Dict[str, Any]) -> List[TextContent]:
                     "description": voice.description,
                     "preview_url": voice.preview_url,
                     "available_for_tiers": voice.available_for_tiers,
-                    "settings": {
-                        "stability": voice.settings.stability if voice.settings else None,
-                        "similarity_boost": voice.settings.similarity_boost if voice.settings else None,
-                        "style": voice.settings.style if voice.settings else None,
-                        "use_speaker_boost": voice.settings.use_speaker_boost if voice.settings else None,
-                    } if voice.settings else None,
+                    "settings": (
+                        {
+                            "stability": (
+                                voice.settings.stability if voice.settings else None
+                            ),
+                            "similarity_boost": (
+                                voice.settings.similarity_boost
+                                if voice.settings
+                                else None
+                            ),
+                            "style": voice.settings.style if voice.settings else None,
+                            "use_speaker_boost": (
+                                voice.settings.use_speaker_boost
+                                if voice.settings
+                                else None
+                            ),
+                        }
+                        if voice.settings
+                        else None
+                    ),
                 }
                 for voice in voices
             ],
         }
-        
+
         return [TextContent(type="text", text=json.dumps(result, indent=2))]
-        
+
     except Exception as e:
         error_msg = f"Failed to list voices: {str(e)}"
         logger.error(error_msg)
         return [TextContent(type="text", text=f"Error: {error_msg}")]
 
+
 async def handle_get_voice_info(arguments: Dict[str, Any]) -> List[TextContent]:
     """Handle getting voice information."""
     voice_id = arguments["voice_id"]
     client = get_elevenlabs_client()
-    
+
     try:
         voice = client.voices.get(voice_id)
-        
+
         result = {
             "success": True,
             "voice": {
@@ -339,12 +376,22 @@ async def handle_get_voice_info(arguments: Dict[str, Any]) -> List[TextContent]:
                 "description": voice.description,
                 "preview_url": voice.preview_url,
                 "available_for_tiers": voice.available_for_tiers,
-                "settings": {
-                    "stability": voice.settings.stability if voice.settings else None,
-                    "similarity_boost": voice.settings.similarity_boost if voice.settings else None,
-                    "style": voice.settings.style if voice.settings else None,
-                    "use_speaker_boost": voice.settings.use_speaker_boost if voice.settings else None,
-                } if voice.settings else None,
+                "settings": (
+                    {
+                        "stability": (
+                            voice.settings.stability if voice.settings else None
+                        ),
+                        "similarity_boost": (
+                            voice.settings.similarity_boost if voice.settings else None
+                        ),
+                        "style": voice.settings.style if voice.settings else None,
+                        "use_speaker_boost": (
+                            voice.settings.use_speaker_boost if voice.settings else None
+                        ),
+                    }
+                    if voice.settings
+                    else None
+                ),
                 "samples": [
                     {
                         "sample_id": sample.sample_id,
@@ -357,13 +404,14 @@ async def handle_get_voice_info(arguments: Dict[str, Any]) -> List[TextContent]:
                 ],
             },
         }
-        
+
         return [TextContent(type="text", text=json.dumps(result, indent=2))]
-        
+
     except Exception as e:
         error_msg = f"Failed to get voice info: {str(e)}"
         logger.error(error_msg)
         return [TextContent(type="text", text=f"Error: {error_msg}")]
+
 
 async def handle_stream_text_to_speech(arguments: Dict[str, Any]) -> List[TextContent]:
     """Handle streaming text-to-speech conversion."""
@@ -371,10 +419,10 @@ async def handle_stream_text_to_speech(arguments: Dict[str, Any]) -> List[TextCo
     voice_id = arguments.get("voice_id", DEFAULT_VOICE_ID)
     model_id = arguments.get("model_id", DEFAULT_MODEL_ID)
     output_file = arguments["output_file"]
-    
+
     client = get_elevenlabs_client()
     output_path = ensure_output_directory(output_file)
-    
+
     try:
         # Use streaming API
         audio_stream = client.text_to_speech.convert_as_stream(
@@ -382,14 +430,14 @@ async def handle_stream_text_to_speech(arguments: Dict[str, Any]) -> List[TextCo
             text=text,
             model_id=model_id,
         )
-        
+
         # Save streamed audio to file
         with open(output_path, "wb") as audio_file:
             for chunk in audio_stream:
                 audio_file.write(chunk)
-        
+
         file_size = output_path.stat().st_size
-        
+
         result = {
             "success": True,
             "message": f"Successfully streamed text to speech",
@@ -399,22 +447,23 @@ async def handle_stream_text_to_speech(arguments: Dict[str, Any]) -> List[TextCo
             "model_id": model_id,
             "text_length": len(text),
         }
-        
+
         return [TextContent(type="text", text=json.dumps(result, indent=2))]
-        
+
     except Exception as e:
         error_msg = f"Failed to stream text to speech: {str(e)}"
         logger.error(error_msg)
         return [TextContent(type="text", text=f"Error: {error_msg}")]
 
+
 async def handle_get_models(arguments: Dict[str, Any]) -> List[TextContent]:
     """Handle getting available models."""
     client = get_elevenlabs_client()
-    
+
     try:
         models_response = client.models.get_all()
         models = models_response.models
-        
+
         result = {
             "success": True,
             "model_count": len(models),
@@ -436,26 +485,25 @@ async def handle_get_models(arguments: Dict[str, Any]) -> List[TextContent]:
                 for model in models
             ],
         }
-        
+
         return [TextContent(type="text", text=json.dumps(result, indent=2))]
-        
+
     except Exception as e:
         error_msg = f"Failed to get models: {str(e)}"
         logger.error(error_msg)
         return [TextContent(type="text", text=f"Error: {error_msg}")]
 
+
 def main():
     """Main entry point for the server."""
     import mcp.server.stdio
-    
+
     async def run_server():
         async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
             await server.run(
-                read_stream,
-                write_stream,
-                server.create_initialization_options()
+                read_stream, write_stream, server.create_initialization_options()
             )
-    
+
     try:
         asyncio.run(run_server())
     except KeyboardInterrupt:
@@ -463,6 +511,7 @@ def main():
     except Exception as e:
         logger.error(f"Server error: {e}")
         raise
+
 
 if __name__ == "__main__":
     main()
