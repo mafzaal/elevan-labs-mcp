@@ -1,9 +1,28 @@
 [project]
 name = "elevan-labs-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "MCP server for ElevenLabs text-to-speech API integration"
 readme = "README.md"
 requires-python = ">=3.13"
+license = {text = "MIT"}
+authors = [
+    {name = "Muhammad Afzaal", email = "mo@thedataguy.pro"},
+]
+maintainers = [
+    {name = "Muhammad Afzaal", email = "mo@thedataguy.pro"},
+]
+keywords = ["mcp", "elevenlabs", "text-to-speech", "tts", "ai", "voice"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
 dependencies = [
     "mcp>=1.0.0",
     "elevenlabs>=2.5.0",
@@ -12,5 +31,66 @@ dependencies = [
     "python-dotenv>=1.1.1",
 ]
 
+[project.urls]
+Homepage = "https://github.com/mafzaal/elevan-labs-mcp"
+Documentation = "https://github.com/mafzaal/elevan-labs-mcp#readme"
+Repository = "https://github.com/mafzaal/elevan-labs-mcp.git"
+"Bug Tracker" = "https://github.com/mafzaal/elevan-labs-mcp/issues"
+Changelog = "https://github.com/mafzaal/elevan-labs-mcp/blob/main/CHANGELOG.md"
+
 [project.scripts]
 elevan-labs-mcp = "elevan_labs_mcp.server:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["elevan_labs_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/elevan_labs_mcp",
+    "/README.md",
+    "/pyproject.toml",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py313']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
