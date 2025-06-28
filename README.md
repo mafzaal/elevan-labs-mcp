@@ -50,6 +50,30 @@ Or using the installed script:
 elevan-labs-mcp
 ```
 
+## 🤖 LLM Integration
+
+### MCP Configuration
+
+The `mcp.json` file provides configuration with clients:
+
+```json
+{
+    "servers": {
+        "elevenlabs-mcp": {
+            "type": "stdio",
+            "command": "uvx",
+            "args": [
+                "--directory",
+                "${workspaceFolder}",
+                "elevan-labs-mcp"
+                
+            ],
+            "envFile": "${workspaceFolder}/.env"
+        }
+    }
+}
+```
+
 ### Available Tools
 
 #### 1. `elevenlabs_text_to_speech`
