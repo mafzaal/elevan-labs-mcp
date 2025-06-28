@@ -1,0 +1,16 @@
+[project]
+name = "elevan-labs-mcp"
+version = "0.1.0"
+description = "MCP server for ElevenLabs text-to-speech API integration"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mcp>=1.0.0",
+    "elevenlabs>=1.0.0",
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.1.1",
+]
+
+[project.scripts]
+elevan-labs-mcp = "elevan_labs_mcp.server:main"
