@@ -165,7 +165,7 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "elevenlabs"
-version = "2.9.2"
+version = "2.12.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -175,9 +175,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/09/61/452764eb9684cd639d16f01772847df5cf79ac10b7ccdcc8bac54c835240/elevenlabs-2.9.2.tar.gz", hash = "sha256:f767e7e567450106fa3f4abe770c507b1ece0b13363110a18b9946315a0eab93", size = 277596, upload-time = "2025-08-09T20:24:45.903Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/90/e7/42c6e2c5e9189a6bcd89595980c562e7cbe01c5f2b7bb54a04e973d6c9d7/elevenlabs-2.12.1.tar.gz", hash = "sha256:71d3febd7424c7a27cfc21e4c2cd9fe91d096ae843a40d95c5a8e344d8ed7390", size = 301794, upload-time = "2025-08-25T04:30:47.791Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5d/11/66eefe3fcbe7ce2353d67223fb70885f1cf074dd69272315e016976a427a/elevenlabs-2.9.2-py3-none-any.whl", hash = "sha256:c7ca04a774bc3801b7d15027810181435f9fd6a93cc707ae0d32a7ce57ac8e59", size = 797980, upload-time = "2025-08-09T20:24:44.008Z" },
+    { url = "https://files.pythonhosted.org/packages/6f/af/c69b2640eecb790b7320ae9eca9f229cf964e949dae4d76299f335ed083b/elevenlabs-2.12.1-py3-none-any.whl", hash = "sha256:9aa0a6a1d387984b3b5e415e44ae947929c4c14fe106e5c3ccafb34e415430d2", size = 858510, upload-time = "2025-08-25T04:30:46.268Z" },
 ]
 
 [[package]]
@@ -323,7 +323,7 @@ wheels = [
 
 [[package]]
 name = "mcp"
-version = "1.13.0"
+version = "1.13.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -338,9 +338,9 @@ dependencies = [
     { name = "starlette" },
     { name = "uvicorn", marker = "sys_platform != 'emscripten'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d3/a8/564c094de5d6199f727f5d9f5672dbec3b00dfafd0f67bf52d995eaa5951/mcp-1.13.0.tar.gz", hash = "sha256:70452f56f74662a94eb72ac5feb93997b35995e389b3a3a574e078bed2aa9ab3", size = 434709, upload-time = "2025-08-14T15:03:58.58Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/66/3c/82c400c2d50afdac4fbefb5b4031fd327e2ad1f23ccef8eee13c5909aa48/mcp-1.13.1.tar.gz", hash = "sha256:165306a8fd7991dc80334edd2de07798175a56461043b7ae907b279794a834c5", size = 438198, upload-time = "2025-08-22T09:22:16.061Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8b/6b/46b8bcefc2ee9e2d2e8d2bd25f1c2512f5a879fac4619d716b194d6e7ccc/mcp-1.13.0-py3-none-any.whl", hash = "sha256:8b1a002ebe6e17e894ec74d1943cc09aa9d23cb931bf58d49ab2e9fa6bb17e4b", size = 160226, upload-time = "2025-08-14T15:03:56.641Z" },
+    { url = "https://files.pythonhosted.org/packages/19/3f/d085c7f49ade6d273b185d61ec9405e672b6433f710ea64a90135a8dd445/mcp-1.13.1-py3-none-any.whl", hash = "sha256:c314e7c8bd477a23ba3ef472ee5a32880316c42d03e06dcfa31a1cc7a73b65df", size = 161494, upload-time = "2025-08-22T09:22:14.705Z" },
 ]
 
 [[package]]
